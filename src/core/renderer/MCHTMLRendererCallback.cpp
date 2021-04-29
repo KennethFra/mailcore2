@@ -241,23 +241,25 @@ mailcore::String * HTMLRendererTemplateCallback::templateForImage(AbstractPart *
 
 mailcore::String * HTMLRendererTemplateCallback::templateForAttachment(AbstractPart * part)
 {
-    return MCSTR("{{#HASSIZE}}\
-                 {{#HASFILENAME}}\
-                 <div>- {{FILENAME}}, {{SIZE}}</div>\
-                 {{/HASFILENAME}}\
-                 {{#NOFILENAME}}\
-                 <div>- Untitled, {{SIZE}}</div>\
-                 {{/NOFILENAME}}\
-                 {{/HASSIZE}}\
-                 {{#NOSIZE}}\
-                 {{#HASFILENAME}}\
-                 <div>- {{FILENAME}}</div>\
-                 {{/HASFILENAME}}\
-                 {{#NOFILENAME}}\
-                 <div>- Untitled</div>\
-                 {{/NOFILENAME}}\
-                 {{/NOSIZE}}\
-                 ");
+    return MCSTR("<div><button class='button attachmentButton' onclick=attachmentAction('{{FILENAME}}')>{{FILENAME}}</button }</div>");
+
+//    return MCSTR("{{#HASSIZE}}\
+//                 {{#HASFILENAME}}\
+//                 <div>- {{FILENAME}}, {{SIZE}}</div>\
+//                 {{/HASFILENAME}}\
+//                 {{#NOFILENAME}}\
+//                 <div>- Untitled, {{SIZE}}</div>\
+//                 {{/NOFILENAME}}\
+//                 {{/HASSIZE}}\
+//                 {{#NOSIZE}}\
+//                 {{#HASFILENAME}}\
+//                 <div>- {{FILENAME}}</div>\
+//                 {{/HASFILENAME}}\
+//                 {{#NOFILENAME}}\
+//                 <div>- Untitled</div>\
+//                 {{/NOFILENAME}}\
+//                 {{/NOSIZE}}\
+//                 ");
 }
 
 mailcore::String * HTMLRendererTemplateCallback::templateForMessage(AbstractMessage * message)

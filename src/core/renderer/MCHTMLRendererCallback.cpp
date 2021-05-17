@@ -12,7 +12,7 @@
 #include "MCDateFormatter.h"
 #include "MCSizeFormatter.h"
 #include "MCAttachment.h"
-
+// Foobar
 using namespace mailcore;
 
 HTMLRendererTemplateCallback::HTMLRendererTemplateCallback()

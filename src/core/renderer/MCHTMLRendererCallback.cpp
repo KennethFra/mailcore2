@@ -241,7 +241,7 @@ mailcore::String * HTMLRendererTemplateCallback::templateForImage(AbstractPart *
 
 mailcore::String * HTMLRendererTemplateCallback::templateForAttachment(AbstractPart * part)
 {
-    return MCSTR("<div><button class='button attachmentButton' onclick=attachmentAction('{{FILENAME}}')>{{FILENAME}}</button }</div>");
+    return MCSTR("<div><button class='button attachmentButton' data-attachmentid='{{UNIQUEID}}' data-contentid='{{CONTENTID}}' onclick=attachmentAction('{{FILENAME}}')>{{FILENAME}}</button></div>");
 
 //    return MCSTR("{{#HASSIZE}}\
 //                 {{#HASFILENAME}}\

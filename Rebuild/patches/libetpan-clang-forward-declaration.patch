@@ -1,0 +1,13 @@
+diff --git a/src/low-level/imap/mailimap_extension_types.h b/src/low-level/imap/mailimap_extension_types.h
+index 88d5ea5..9ffe190 100644
+--- a/src/low-level/imap/mailimap_extension_types.h
++++ b/src/low-level/imap/mailimap_extension_types.h
+@@ -83,6 +83,8 @@ enum {
+   elements. thus an extension's initial free can call
+   the correct actual free to free its data.
+ */
++struct mailimap_parser_context;
++
+ struct mailimap_extension_api {
+   char * ext_name;
+   int ext_id; /* use -1 if this is an extension outside libetpan */

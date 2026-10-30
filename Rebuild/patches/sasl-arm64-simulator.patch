@@ -1,0 +1,65 @@
+--- a/config/config.sub
++++ b/config/config.sub
+@@ -246,7 +246,7 @@
+ 	# Recognize the basic CPU types without company name.
+ 	# Some are omitted here because they have special meanings below.
+ 	1750a | 580 \
+-	| a29k \
++	| a29k | aarch64 | arm64 \
+ 	| alpha | alphaev[4-8] | alphaev56 | alphaev6[78] | alphapca5[67] \
+ 	| alpha64 | alpha64ev[4-8] | alpha64ev56 | alpha64ev6[78] | alpha64pca5[67] \
+ 	| am33_2.0 \
+@@ -353,7 +353,7 @@
+ 		;;
+ 	# Recognize the basic CPU types with company name.
+ 	580-* \
+-	| a29k-* \
++	| a29k-* | aarch64-* | arm64-* \
+ 	| alpha-* | alphaev[4-8]-* | alphaev56-* | alphaev6[78]-* \
+ 	| alpha64-* | alpha64ev[4-8]-* | alpha64ev56-* | alpha64ev6[78]-* \
+ 	| alphapca5[67]-* | alpha64pca5[67]-* | arc-* \
+--- a/include/Makefile.am
++++ b/include/Makefile.am
+@@ -53,7 +53,7 @@
+ 
+ md5global.h: makemd5
+ 	-rm -f md5global.h
+-	./makemd5 md5global.h
++	./makemd5-host md5global.h
+ 
+ EXTRA_DIST = NTMakefile
+ DISTCLEANFILES = md5global.h
+--- a/include/Makefile.in
++++ b/include/Makefile.in
+@@ -646,7 +646,7 @@
+ 
+ md5global.h: makemd5
+ 	-rm -f md5global.h
+-	./makemd5 md5global.h
++	./makemd5-host md5global.h
+ 
+ # Tell versions [3.59,3.63) of GNU make to not export all variables.
+ # Otherwise a system limit (for SysV at least) may be exceeded.
+--- a/lib/Makefile.in
++++ b/lib/Makefile.in
+@@ -679,6 +679,7 @@
+ libsasl2.a: libsasl2.la $(SASL_STATIC_OBJS)
+ 	@echo adding static plugins and dependencies
+ 	$(AR) cru .libs/$@ $(SASL_STATIC_OBJS)
++	$(RANLIB) .libs/$@
+ 	@for i in ./libsasl2.la ../sasldb/libsasldb.la ../plugins/lib*.la; do \
+ 	if test ! -f $$i; then continue; fi; . $$i; \
+ 	for j in $$dependency_libs foo; do \
+--- a/lib/client.c
++++ b/lib/client.c
+@@ -503,8 +503,8 @@
+   
+   /* get the clientFQDN (serverFQDN was set in _sasl_conn_init) */
+   memset(name, 0, sizeof(name));
+-  if (get_fqhostname (name, MAXHOSTNAMELEN, 0) != 0) {
+-      return (SASL_FAIL);
++  if (get_fqhostname (name, MAXHOSTNAMELEN, 1) != 0) {
++      gethostname(name, MAXHOSTNAMELEN);
+   }
+ 
+   result = _sasl_strdup(name, &conn->clientFQDN, NULL);

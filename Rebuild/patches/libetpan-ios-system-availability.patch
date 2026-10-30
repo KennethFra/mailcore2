@@ -1,0 +1,84 @@
+diff --git a/src/engine/mailprivacy_smime.c b/src/engine/mailprivacy_smime.c
+index e580a79..29de2e9 100644
+--- a/src/engine/mailprivacy_smime.c
++++ b/src/engine/mailprivacy_smime.c
+@@ -37,6 +37,9 @@
+ #	include <config.h>
+ #endif
+ 
++#if __APPLE__
++#include <TargetConditionals.h>
++#endif
+ #include "mailprivacy_smime.h"
+ #include <string.h>
+ #ifdef WIN32
+@@ -1537,7 +1540,13 @@ static int get_cert_from_sig(struct mailprivacy * privacy,
+   char quoted_store_cert_filename[PATH_MAX];
+   int r;
+   char command[PATH_MAX];
+-
++
++#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
++  //https://github.com/dinhviethoa/libetpan/issues/275
++  //get_cert_from_sig is not needed on iOS
++  return MAIL_ERROR_COMMAND;
++#endif
++
+   if (* cert_dir == '\0')
+     return MAIL_ERROR_INVAL;
+ 
+@@ -1597,7 +1606,12 @@ static int get_cert_from_sig(struct mailprivacy * privacy,
+       "openssl pkcs7 -inform DER -in '%s' -out '%s' -print_certs 2>/dev/null",
+       quoted_signature_filename, quoted_store_cert_filename);
+   
++#if !TARGET_OS_IPHONE && !TARGET_IPHONE_SIMULATOR
++  //https://github.com/dinhviethoa/libetpan/issues/275
++  //system() is not supported on iOS 11.
+   r = system(command);
++#endif
++
+   if (WEXITSTATUS(r) != 0) {
+     res = MAIL_ERROR_COMMAND;
+     goto unlink_signature;
+diff --git a/src/engine/mailprivacy_tools.c b/src/engine/mailprivacy_tools.c
+index cf24502..28bb134 100644
+--- a/src/engine/mailprivacy_tools.c
++++ b/src/engine/mailprivacy_tools.c
+@@ -37,6 +37,10 @@
+ #	include <config.h>
+ #endif
+ 
++#if __APPLE__
++#include <TargetConditionals.h>
++#endif
++
+ #include "mailprivacy_tools.h"
+ #include "mailprivacy_tools_private.h"
+ 
+@@ -1323,6 +1327,12 @@ int mailprivacy_spawn_and_wait(char * command, char * passphrase,
+     char * stdoutfile, char * stderrfile,
+     int * bad_passphrase)
+ {
++#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
++  //https://github.com/dinhviethoa/libetpan/issues/275
++  //mailprivacy_spawn_and_wait is not needed on iOS
++  return MAIL_ERROR_COMMAND;
++#endif
++
+ #ifdef WIN32
+   int res;
+   SECURITY_ATTRIBUTES sec_attr;
+@@ -1509,8 +1519,12 @@ int mailprivacy_spawn_and_wait(char * command, char * passphrase,
+       dup2(fd_err, 2);
+       close(fd_err);
+       
++#if !TARGET_OS_IPHONE && !TARGET_IPHONE_SIMULATOR
++      //https://github.com/dinhviethoa/libetpan/issues/275
++      //system() is not supported on iOS 11.
+       status = system(command);
+-      
++#endif
++
+       exit(WEXITSTATUS(status));
+     }
+     break;
